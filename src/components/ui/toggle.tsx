@@ -1,9 +1,3 @@
-// Pencil: toggleSection → toggleRow
-// toggleOn:  track w=40 h=22 cornerRadius=11 fill=accent-green (#22C55E), knob w=16 h=16 fill=#0A0A0A, label text=accent-green
-// toggleOff: track w=40 h=22 cornerRadius=11 fill=border-primary (#2A2A2A), knob w=16 h=16 fill=#6B7280, label text=text-secondary
-// track padding=3, knob is ellipse aligned end (on) or start (off)
-// label: font JetBrains Mono 12px, gap=12 between track+label
-
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
@@ -39,7 +33,6 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
 
     return (
       <div className={cn("flex items-center gap-3", className)}>
-        {/* Track: w=40 h=22 cornerRadius=11 padding=3 */}
         <button
           ref={ref}
           type="button"
@@ -51,7 +44,6 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
             checked ? "bg-[#22C55E]" : "bg-[#2A2A2A]",
           )}
         >
-          {/* Knob: w=16 h=16 ellipse */}
           <span
             className={cn(
               "block w-4 h-4 rounded-full transition-transform duration-200",
@@ -62,7 +54,6 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
           />
         </button>
 
-        {/* Label: JetBrains Mono 12px */}
         {label && (
           <span
             className={cn(

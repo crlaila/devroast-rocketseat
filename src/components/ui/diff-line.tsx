@@ -1,18 +1,3 @@
-// Pencil: diffLineSection → diffLines (width=560)
-// Three rows, all: flex row, gap=8, padding=[8,16]
-//
-// diffRemoved (0mlFd): fill=#1A0A0A
-//   prefix "-"  fill=accent-red (#EF4444), JetBrains Mono 13px normal
-//   code         fill=text-secondary (#6B7280), JetBrains Mono 13px normal
-//
-// diffAdded (hVheA): fill=#0A1A0F
-//   prefix "+"  fill=accent-green (#22C55E), JetBrains Mono 13px normal
-//   code         fill=text-primary (#FAFAFA), JetBrains Mono 13px normal
-//
-// diffContext (vYoEf): no fill (transparent)
-//   prefix " "  fill=text-tertiary (#4B5563), JetBrains Mono 13px normal
-//   code         fill=text-secondary (#6B7280), JetBrains Mono 13px normal
-
 import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 import { cn } from "@/lib/utils";
