@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Toggle } from "@/components";
+import { Button, CodeEditor, Toggle } from "@/components";
 
 const LEADERBOARD = [
   {
@@ -40,16 +40,6 @@ const LEADERBOARD = [
     lastRow: true,
   },
 ];
-
-function WindowHeader() {
-  return (
-    <div className="flex items-center gap-2 h-10 px-4 border-b border-[#2A2A2A] shrink-0">
-      <span className="w-3 h-3 rounded-full bg-[#EF4444]" />
-      <span className="w-3 h-3 rounded-full bg-[#F59E0B]" />
-      <span className="w-3 h-3 rounded-full bg-[#10B981]" />
-    </div>
-  );
-}
 
 function LeaderboardHeader() {
   return (
@@ -121,12 +111,6 @@ export default function HomePage() {
   const [roastMode, setRoastMode] = useState(true);
   const hasCode = code.trim().length > 0;
 
-  const lineCount = code.split("\n").length;
-  const lineNumbers = Array.from(
-    { length: Math.max(lineCount, 16) },
-    (_, i) => i + 1,
-  );
-
   return (
     <main className="bg-[#0A0A0A] min-h-screen">
       <div className="max-w-[960px] mx-auto px-10 pt-20 pb-20 flex flex-col gap-8">
@@ -146,39 +130,11 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="flex flex-col border border-[#2A2A2A] bg-[#111111] w-full max-w-[780px] mx-auto h-[360px] overflow-hidden">
-          <WindowHeader />
-          <div className="flex flex-1 min-h-0">
-            <div
-              className="flex flex-col w-12 shrink-0 bg-[#0F0F0F] border-r border-[#2A2A2A] px-3 py-4 overflow-hidden"
-              style={{ gap: "8px" }}
-            >
-              {lineNumbers.map((n) => (
-                <span
-                  key={n}
-                  className="font-['JetBrains_Mono',monospace] text-[12px] font-normal text-[#4B5563] text-right select-none"
-                  style={{
-                    lineHeight: "20px",
-                    height: "20px",
-                    display: "block",
-                  }}
-                >
-                  {n}
-                </span>
-              ))}
-            </div>
-            <textarea
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              spellCheck={false}
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-              className="flex-1 bg-transparent text-[#FAFAFA] font-['JetBrains_Mono',monospace] text-[12px] font-normal resize-none outline-none border-0 p-4 overflow-auto"
-              style={{ lineHeight: "20px", caretColor: "#22C55E" }}
-            />
-          </div>
-        </div>
+        <CodeEditor
+          value={code}
+          onChange={setCode}
+          className="w-full max-w-[780px] mx-auto h-[360px]"
+        />
 
         <div className="flex items-center justify-between w-full max-w-[780px] mx-auto">
           <div className="flex items-center gap-4">

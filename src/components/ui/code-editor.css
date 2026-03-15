@@ -1,0 +1,145 @@
+/* ============================================================
+   CodeEditor — Overlay pattern
+   
+   Estrutura:
+     .editor-area (position: relative)
+       .highlight-layer (position: absolute, pointer-events: none)
+       .input-layer     (position: relative, background: transparent)
+   
+   Ambas as camadas devem ter exatamente o mesmo:
+   - font-family, font-size, line-height
+   - padding
+   - white-space handling
+   ============================================================ */
+
+/* --- Shared typography --- */
+.editor-area,
+.highlight-layer,
+.input-layer {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  line-height: 20px;
+  tab-size: 2;
+}
+
+/* --- Layout --- */
+.editor-area {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* --- Highlight layer (behind) --- */
+.highlight-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  padding: 16px;
+
+  /* Prevent flicker when switching languages */
+  transition: opacity 150ms ease;
+}
+
+/* Shiki wraps output in <pre><code> — reset its styles */
+/* Higher specificity to override Shiki's inline background without !important */
+.highlight-layer > pre,
+.highlight-layer > pre.shiki {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  background-color: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  white-space: pre-wrap;
+  word-break: break-all;
+  overflow: visible;
+}
+
+.highlight-layer > pre code,
+.highlight-layer > pre.shiki code {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  background: transparent;
+  background-color: transparent;
+}
+
+/* --- Input layer (in front) --- */
+.input-layer {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  background: transparent;
+  color: transparent;
+  caret-color: #22c55e; /* accent-green */
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 16px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  overflow: auto;
+  -webkit-text-fill-color: transparent;
+}
+
+.input-layer::placeholder {
+  color: #4b5563; /* text-tertiary */
+  -webkit-text-fill-color: #4b5563;
+  font-style: italic;
+}
+
+/* --- Language selector dropdown --- */
+.lang-selector-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 50;
+  min-width: 160px;
+  max-height: 280px;
+  overflow-y: auto;
+  background: #0f0f0f;
+  border: 1px solid #2a2a2a;
+  padding: 4px 0;
+}
+
+.lang-selector-dropdown::-webkit-scrollbar {
+  width: 4px;
+}
+
+.lang-selector-dropdown::-webkit-scrollbar-track {
+  background: #0f0f0f;
+}
+
+.lang-selector-dropdown::-webkit-scrollbar-thumb {
+  background: #2a2a2a;
+}
+
+.lang-selector-item {
+  display: block;
+  width: 100%;
+  padding: 6px 12px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  line-height: 16px;
+  color: #6b7280;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.lang-selector-item:hover,
+.lang-selector-item[data-active="true"] {
+  background: #1a1a1a;
+  color: #fafafa;
+}
+
+.lang-selector-item[data-active="true"] {
+  color: #22c55e;
+}
