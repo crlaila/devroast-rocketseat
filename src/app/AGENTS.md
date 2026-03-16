@@ -32,7 +32,7 @@ Toda feature que carrega dados do tRPC segue esta estrutura de 3 arquivos:
 |---|---|---|
 | `*-server.tsx` | Server Component | `prefetch` + `HydrateClient` + `<Suspense>` |
 | `*-skeleton.tsx` | Server ou Client | Placeholder visual durante carregamento |
-| `*-display.tsx` | Client Component (`'use client'`) | Consome dados via `useQuery` + renderiza |
+| `*-display.tsx` | Client Component (`'use client'`) | Consome dados via `useSuspenseQuery` + renderiza |
 
 ### Exemplo: MetricsServer
 
@@ -58,21 +58,42 @@ export function MetricsServer() {
 ```tsx
 // metrics-display.tsx (client component)
 'use client';
-import NumberFlow from '@number-flow/react';
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { useTRPC } from '@/trpc/client';
 
 export function MetricsDisplay() {
   const trpc = useTRPC();
-  const { data } = useQuery(trpc.metrics.stats.queryOptions());
-  // ...
+  const { data } = useSuspenseQuery(trpc.metrics.stats.queryOptions());
+  // data nunca é undefined aqui — suspende até ter dados
 }
+```
+
+## CRÍTICO: sempre usar useSuspenseQuery dentro de Suspense
+
+Client components que ficam dentro de um `<Suspense>` **devem** usar `useSuspenseQuery`,
+nunca `useQuery`.
+
+**Por quê:** `useQuery` com fallback `?? defaultValue` causa hydration mismatch — o servidor
+renderiza com os dados do prefetch, mas o cliente renderiza inicialmente com o fallback,
+gerando HTML diferente.
+
+`useSuspenseQuery` suspende o componente enquanto não há dados, garantindo que servidor
+e cliente sempre renderizem o mesmo conteúdo.
+
+```tsx
+// ERRADO — causa hydration mismatch
+const { data } = useQuery(trpc.x.y.queryOptions());
+const value = data?.field ?? 0; // cliente renderiza 0, servidor renderiza o valor real
+
+// CERTO — servidor e cliente sempre renderizam o mesmo HTML
+const { data } = useSuspenseQuery(trpc.x.y.queryOptions());
+const value = data.field; // nunca undefined, componente suspende até ter dados
 ```
 
 ## Números animados
 
 Usar `<NumberFlow />` de `@number-flow/react` para qualquer número que carrega após hydration.  
-Sempre dentro de um client component. Anima de 0 → valor real automaticamente.
+Sempre dentro de um client component com `useSuspenseQuery`. Anima de 0 → valor real automaticamente.
 
 ```tsx
 import NumberFlow from '@number-flow/react';

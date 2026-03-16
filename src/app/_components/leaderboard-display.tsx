@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useTRPC } from "@/trpc/client";
 
@@ -19,9 +19,7 @@ function isComment(line: string): boolean {
 
 export function LeaderboardDisplay() {
   const trpc = useTRPC();
-  const { data } = useQuery(trpc.leaderboard.topThree.queryOptions());
-
-  const rows = data ?? [];
+  const { data: rows } = useSuspenseQuery(trpc.leaderboard.topThree.queryOptions());
 
   return (
     <div className="border border-[#2A2A2A] flex flex-col w-full">
