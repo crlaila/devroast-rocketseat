@@ -56,17 +56,19 @@ No changes to `metricsRouter` — `metrics.stats` already provides `totalRoasted
 
 ## File Structure
 
+Route-specific components live under `src/app/leaderboard/_components/` — not the shared `src/app/_components/`. This follows the Next.js per-route `_components/` convention documented in `src/app/AGENTS.md`.
+
 ```
 src/app/leaderboard/
 ├── _components/
 │   ├── leaderboard-page-server.tsx    ← Server Component
 │   ├── leaderboard-page-display.tsx   ← Client Component ('use client')
-│   ├── leaderboard-page-skeleton.tsx  ← Skeleton placeholder
-│   ├── stats-server.tsx               ← Server Component
-│   └── stats-display.tsx              ← Client Component ('use client')
+│   └── leaderboard-page-skeleton.tsx  ← Skeleton placeholder
 ├── data.ts                            ← DELETE after implementation
 └── page.tsx                           ← Server Component (no 'use client')
 ```
+
+Stats in the hero reuse the existing `MetricsServer` component from `src/app/_components/metrics-server.tsx` — no new stats components are created.
 
 ---
 
@@ -89,21 +91,14 @@ Calls `prefetch(trpc.leaderboard.topTwenty.queryOptions())`, wraps in `HydrateCl
 
 20 skeleton rows, each matching the card structure (header bar + code area pulse). Uses `animate-pulse` on placeholder blocks.
 
-### `stats-server.tsx` (Server Component)
-
-Calls `prefetch(trpc.metrics.stats.queryOptions())`, wraps in `HydrateClient` + `<Suspense fallback={<StatsSkeleton />}`. `StatsSkeleton` is an inline simple placeholder (two short pulse blocks) — no separate file needed given its simplicity.
-
-### `stats-display.tsx` (Client Component)
-
-- `useSuspenseQuery(trpc.metrics.stats.queryOptions())`
-- Renders `<NumberFlow value={data.totalRoasted} />` and `avg score: {data.avgScore}/10`
-- Same typography as current hero: `IBM_Plex_Mono`, `text-[12px]`, `text-[#4B5563]`
-
 ### `page.tsx` (Server Component)
 
 Replaces current implementation. No `"use client"`. Structure:
 
 ```tsx
+import { MetricsServer } from "@/app/_components/metrics-server";
+import { LeaderboardPageServer } from "./_components/leaderboard-page-server";
+
 export default function LeaderboardPage() {
   return (
     <main>
@@ -111,7 +106,7 @@ export default function LeaderboardPage() {
         {/* Hero */}
         <section>
           {/* Static: "> shame_leaderboard" heading + comment */}
-          <StatsServer /> {/* replaces hardcoded submission count + avg score */}
+          <MetricsServer /> {/* replaces hardcoded submission count + avg score */}
         </section>
 
         {/* Entries */}
@@ -121,6 +116,8 @@ export default function LeaderboardPage() {
   );
 }
 ```
+
+`MetricsServer` already exists at `src/app/_components/metrics-server.tsx` and prefetches `trpc.metrics.stats`, providing `totalRoasted` and `avgScore`. No duplication needed.
 
 ---
 
@@ -150,7 +147,7 @@ Rank color mapping:
 |------|-------|
 | #1 | `#F59E0B` (amber) |
 | #2 | `#6B7280` (gray) |
-| #3 | `#6B7280` (gray) |
+| #3 | `#6B7280` (gray — intentionally same as #2, matching homepage `RANK_COLORS`) |
 | #4–#20 | `#4B5563` (dark gray) |
 
 ---
