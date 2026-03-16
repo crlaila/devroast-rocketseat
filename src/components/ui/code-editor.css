@@ -35,11 +35,18 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  overflow: hidden;
+  overflow: scroll;
   padding: 16px;
+  /* Hide scrollbar — scroll is driven programmatically via onScroll sync */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 
   /* Prevent flicker when switching languages */
   transition: opacity 150ms ease;
+}
+
+.highlight-layer::-webkit-scrollbar {
+  display: none;
 }
 
 /* Shiki wraps output in <pre><code> — reset its styles */

@@ -241,6 +241,8 @@ export function CodeEditor({
   className,
 }: CodeEditorProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const highlightRef = useRef<HTMLDivElement>(null);
+  const lineNumbersRef = useRef<HTMLDivElement>(null);
   const badgeRef = useRef<HTMLDivElement>(null);
 
   // Manual language override (null = auto-detect)
@@ -302,6 +304,18 @@ export function CodeEditor({
       case "Escape":
         textarea.blur();
         break;
+    }
+  }, []);
+
+  const handleScroll = useCallback(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    if (highlightRef.current) {
+      highlightRef.current.scrollTop = textarea.scrollTop;
+      highlightRef.current.scrollLeft = textarea.scrollLeft;
+    }
+    if (lineNumbersRef.current) {
+      lineNumbersRef.current.scrollTop = textarea.scrollTop;
     }
   }, []);
 
@@ -368,6 +382,7 @@ export function CodeEditor({
       <div className="flex flex-1 min-h-0">
         {/* Line numbers */}
         <div
+          ref={lineNumbersRef}
           className="flex flex-col shrink-0 bg-[#0F0F0F] border-r border-[#2A2A2A] px-3 py-4 overflow-hidden select-none"
           style={{ width: "48px", gap: `${LINE_HEIGHT - 20}px` }}
           aria-hidden="true"
@@ -401,6 +416,7 @@ export function CodeEditor({
 
           {/* Highlighted HTML layer */}
           <div
+            ref={highlightRef}
             className="highlight-layer"
             style={{ top: isLargeFile ? "28px" : "0" }}
             // biome-ignore lint/security/noDangerouslySetInnerHtml: sanitized by shiki
@@ -415,6 +431,7 @@ export function CodeEditor({
               value={value}
               onChange={handleChange}
               onKeyDown={handleKeyDown}
+              onScroll={handleScroll}
               spellCheck={false}
               autoComplete="off"
               autoCorrect="off"

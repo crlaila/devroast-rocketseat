@@ -133,7 +133,7 @@ export default function HomePage() {
         <CodeEditor
           value={code}
           onChange={setCode}
-          className="w-full max-w-[780px] mx-auto h-[360px]"
+          className="w-full max-w-[780px] mx-auto h-[480px]"
         />
 
         <div className="flex items-center justify-between w-full max-w-[780px] mx-auto">
