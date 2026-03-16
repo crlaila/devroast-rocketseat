@@ -9,6 +9,8 @@ A Next.js 16 app where users paste code and get an AI-generated roast/score. Dar
 - **Styling:** Tailwind CSS v4 (no config file — uses `@theme` in `globals.css`)
 - **Linting/Formatting:** Biome (`npm run lint`)
 - **Font loading:** `next/font/google` — JetBrains Mono, IBM Plex Mono, Inter
+- **API layer:** tRPC v11 + TanStack React Query (see `src/trpc/AGENTS.md`)
+- **Database:** Drizzle ORM + PostgreSQL (see `src/db/`)
 
 ## Design system
 Source of truth is `/Users/crlaila/Desktop/devroast.pen` (Pencil file).  
@@ -50,6 +52,18 @@ Exports via `src/components/index.ts` → `src/components/ui/index.ts`.
 - Typography: JetBrains Mono for all code/UI text; IBM Plex Mono for descriptions
 - Use `font-['JetBrains_Mono',monospace]` inline class (Tailwind v4 arbitrary)
 - `cn()` from `@/lib/utils` for conditional class merging
-- All data is static for now — no API calls yet
 - `Navbar` lives in `layout.tsx` (shared across all pages)
 - Content max-width: `max-w-[960px] mx-auto`; editor/actions: `max-w-[780px] mx-auto`
+
+## Spec-first workflow
+Every new feature requires a spec in `specs/` before any implementation.  
+See `specs/AGENTS.md` for the spec format and rules.
+
+## Pages are Server Components by default
+`page.tsx` files must be server components (no `"use client"` at the top level).  
+Interactive state (useState, event handlers) must be extracted into dedicated client components  
+placed in `src/app/_components/`. See `src/app/AGENTS.md` for details.
+
+## Animated numbers
+Use `@number-flow/react` (`<NumberFlow />`) whenever displaying counts or scores that  
+transition from 0 to their real value after data loads. Always used inside a client component.
