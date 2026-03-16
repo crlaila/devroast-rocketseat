@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { IBM_Plex_Mono, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components";
+import { TRPCReactProvider } from "@/trpc/client";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -35,11 +36,13 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} ${ibmPlexMono.variable} bg-[#0A0A0A]`}
       >
-        <Navbar
-          appName="devroast"
-          links={[{ label: "leaderboard", href: "/leaderboard" }]}
-        />
-        {children}
+        <TRPCReactProvider>
+          <Navbar
+            appName="devroast"
+            links={[{ label: "leaderboard", href: "/leaderboard" }]}
+          />
+          {children}
+        </TRPCReactProvider>
       </body>
     </html>
   );

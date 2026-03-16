@@ -1,7 +1,6 @@
-"use client";
-
-import { useState } from "react";
-import { Button, CodeEditor, Toggle } from "@/components";
+import { Button } from "@/components";
+import { HomeEditor } from "./_components/home-editor";
+import { MetricsServer } from "./_components/metrics-server";
 
 const LEADERBOARD = [
   {
@@ -107,10 +106,6 @@ function LeaderboardRow({
 }
 
 export default function HomePage() {
-  const [code, setCode] = useState("");
-  const [roastMode, setRoastMode] = useState(true);
-  const hasCode = code.trim().length > 0;
-
   return (
     <main className="bg-[#0A0A0A] min-h-screen">
       <div className="max-w-[960px] mx-auto px-10 pt-20 pb-20 flex flex-col gap-8">
@@ -130,39 +125,9 @@ export default function HomePage() {
           </p>
         </div>
 
-        <CodeEditor
-          value={code}
-          onChange={setCode}
-          className="w-full max-w-[780px] mx-auto h-[480px]"
-        />
+        <HomeEditor />
 
-        <div className="flex items-center justify-between w-full max-w-[780px] mx-auto">
-          <div className="flex items-center gap-4">
-            <Toggle
-              checked={roastMode}
-              onChange={setRoastMode}
-              label="roast mode"
-            />
-            <span className="font-['IBM_Plex_Mono',monospace] text-[12px] font-normal text-[#4B5563]">
-              {"// maximum sarcasm enabled"}
-            </span>
-          </div>
-          <Button variant="primary" disabled={!hasCode}>
-            $ roast_my_code
-          </Button>
-        </div>
-
-        <div className="flex items-center justify-center gap-6">
-          <span className="font-['IBM_Plex_Mono',monospace] text-[12px] font-normal text-[#4B5563]">
-            2,847 codes roasted
-          </span>
-          <span className="font-['JetBrains_Mono',monospace] text-[12px] font-normal text-[#4B5563]">
-            ·
-          </span>
-          <span className="font-['IBM_Plex_Mono',monospace] text-[12px] font-normal text-[#4B5563]">
-            avg score: 4.2/10
-          </span>
-        </div>
+        <MetricsServer />
 
         <div className="h-[60px]" />
 
@@ -192,7 +157,7 @@ export default function HomePage() {
 
           <div className="flex justify-center py-4">
             <span className="font-['IBM_Plex_Mono',monospace] text-[12px] font-normal text-[#4B5563]">
-              {"showing top 3 of 2,847 · view full leaderboard >>"}
+              {"showing top 3 · view full leaderboard >>"}
             </span>
           </div>
         </div>

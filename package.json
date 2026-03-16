@@ -15,14 +15,21 @@
     "db:seed": "dotenv -e .env.local tsx src/db/seed.ts"
   },
   "dependencies": {
+    "@number-flow/react": "^0.6.0",
+    "@tanstack/react-query": "^5.90.21",
+    "@trpc/client": "^11.13.4",
+    "@trpc/server": "^11.13.4",
+    "@trpc/tanstack-react-query": "^11.13.4",
     "@vscode/vscode-languagedetection": "^1.0.23",
     "class-variance-authority": "^0.7.1",
+    "client-only": "^0.0.1",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.1",
     "next": "16.1.6",
     "pg": "^8.20.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "server-only": "^0.0.1",
     "shiki": "^4.0.2",
     "tailwind-merge": "^3.5.0",
     "tailwindcss-animate": "^1.0.7"
