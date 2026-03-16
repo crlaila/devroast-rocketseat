@@ -1,4 +1,4 @@
-import { count, avg } from "drizzle-orm";
+import { avg, count } from "drizzle-orm";
 import { submissions } from "@/db/schema";
 import { baseProcedure, createTRPCRouter } from "../init";
 

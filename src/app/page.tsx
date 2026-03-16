@@ -3,6 +3,8 @@ import { HomeEditor } from "./_components/home-editor";
 import { LeaderboardServer } from "./_components/leaderboard-server";
 import { MetricsServer } from "./_components/metrics-server";
 
+export const revalidate = 3600; // revalida a cada 1 hora
+
 export default function HomePage() {
   return (
     <main className="bg-[#0A0A0A] min-h-screen">
