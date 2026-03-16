@@ -8,6 +8,7 @@ export type { CodeBlockProps, CodeLine, CodeToken } from "./code-block";
 export { CodeBlock } from "./code-block";
 export type { CodeEditorProps } from "./code-editor";
 export { CodeEditor } from "./code-editor";
+export { CollapsibleCode } from "./collapsible-code";
 export type { DiffLineProps } from "./diff-line";
 export { DiffLine, diffLineVariants } from "./diff-line";
 export type { NavbarProps } from "./navbar";

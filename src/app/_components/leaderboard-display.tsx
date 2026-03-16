@@ -2,83 +2,82 @@
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { CollapsibleCode } from "@/components";
 import { useTRPC } from "@/trpc/client";
 
 const RANK_COLORS = ["#F59E0B", "#6B7280", "#6B7280"];
 
-function isComment(line: string): boolean {
-  const trimmed = line.trimStart();
-  return (
-    trimmed.startsWith("//") ||
-    trimmed.startsWith("#") ||
-    trimmed.startsWith("--") ||
-    trimmed.startsWith("/*") ||
-    trimmed.startsWith("*")
-  );
-}
-
 export function LeaderboardDisplay() {
   const trpc = useTRPC();
-  const { data: rows } = useSuspenseQuery(trpc.leaderboard.topThree.queryOptions());
+  const { data: rows } = useSuspenseQuery(
+    trpc.leaderboard.topThree.queryOptions(),
+  );
+
+  if (!rows.length) {
+    return (
+      <div className="border border-[#2A2A2A] flex flex-col w-full">
+        <div className="flex items-center h-20 justify-center">
+          <span className="font-['IBM_Plex_Mono',monospace] text-[13px] font-normal text-[#4B5563]">
+            {"// no submissions yet"}
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="border border-[#2A2A2A] flex flex-col w-full">
-      {/* header */}
-      <div className="flex items-center h-10 px-5 bg-[#0F0F0F] border-b border-[#2A2A2A]">
-        <span className="w-[50px] shrink-0 font-['JetBrains_Mono',monospace] text-[12px] font-medium text-[#4B5563]">
-          #
-        </span>
-        <span className="w-[70px] shrink-0 font-['JetBrains_Mono',monospace] text-[12px] font-medium text-[#4B5563]">
-          score
-        </span>
-        <span className="flex-1 font-['JetBrains_Mono',monospace] text-[12px] font-medium text-[#4B5563]">
-          code
-        </span>
-        <span className="w-[100px] shrink-0 font-['JetBrains_Mono',monospace] text-[12px] font-medium text-[#4B5563]">
-          lang
-        </span>
-      </div>
-
+    <div className="flex flex-col gap-3 w-full">
       {rows.map((row, index) => {
-        const isLast = index === rows.length - 1;
         const rankColor = RANK_COLORS[index] ?? "#6B7280";
 
         return (
-          <Link
+          <article
             key={row.id}
-            href={`/result/${row.id}`}
-            className={`flex items-start px-5 py-4 transition-colors hover:bg-[#141414] ${
-              isLast ? "" : "border-b border-[#2A2A2A]"
-            }`}
+            className="flex flex-col border border-[#2A2A2A]"
           >
-            <span
-              className="w-[50px] shrink-0 font-['JetBrains_Mono',monospace] text-[12px] font-normal pt-px"
-              style={{ color: rankColor }}
+            {/* Meta header — entire row is a link to the result */}
+            <Link
+              href={`/result/${row.id}`}
+              className="flex items-center justify-between h-10 px-4 bg-[#0F0F0F] border-b border-[#2A2A2A] hover:bg-[#141414] transition-colors"
             >
-              {row.rank}
-            </span>
+              <div className="flex items-center gap-4">
+                {/* Rank */}
+                <div className="flex items-center gap-1.5">
+                  <span className="font-['JetBrains_Mono',monospace] text-[12px] font-normal text-[#4B5563]">
+                    #
+                  </span>
+                  <span
+                    className="font-['JetBrains_Mono',monospace] text-[13px] font-bold"
+                    style={{ color: rankColor }}
+                  >
+                    {row.rank}
+                  </span>
+                </div>
 
-            <span className="w-[70px] shrink-0 font-['JetBrains_Mono',monospace] text-[12px] font-bold text-[#EF4444] pt-px">
-              {Number(row.score).toFixed(1)}
-            </span>
+                {/* Score */}
+                <div className="flex items-center gap-1.5">
+                  <span className="font-['JetBrains_Mono',monospace] text-[12px] font-normal text-[#4B5563]">
+                    score:
+                  </span>
+                  <span className="font-['JetBrains_Mono',monospace] text-[13px] font-bold text-[#EF4444]">
+                    {Number(row.score).toFixed(1)}
+                  </span>
+                </div>
+              </div>
 
-            <div className="flex-1 flex flex-col gap-[3px] min-w-0">
-              {row.codeLines.map((line, i) => (
-                <span
-                  // biome-ignore lint/suspicious/noArrayIndexKey: code lines are positional
-                  key={i}
-                  className="font-['JetBrains_Mono',monospace] text-[12px] font-normal truncate"
-                  style={{ color: isComment(line) ? "#4B5563" : "#FAFAFA" }}
-                >
-                  {line}
-                </span>
-              ))}
-            </div>
+              {/* Language */}
+              <span className="font-['JetBrains_Mono',monospace] text-[12px] font-normal text-[#6B7280]">
+                {row.language}
+              </span>
+            </Link>
 
-            <span className="w-[100px] shrink-0 font-['JetBrains_Mono',monospace] text-[12px] font-normal text-[#6B7280] text-right pt-px">
-              {row.language}
-            </span>
-          </Link>
+            {/* Collapsible code block — outside the Link to avoid navigation on expand */}
+            <CollapsibleCode
+              code={row.code}
+              language={row.language}
+              className="w-full"
+            />
+          </article>
         );
       })}
     </div>

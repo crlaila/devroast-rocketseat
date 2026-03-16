@@ -2,13 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { HighlighterCore, LanguageInput } from "shiki/core";
+import type { CodeLine } from "@/components/ui/code-block";
 import { LANGUAGE_MAP, PRELOADED_LANG_IDS } from "@/lib/languages";
 import { devroastTheme } from "@/lib/shiki-theme";
 
 type HighlightFn = (code: string, langId: string) => string;
+type TokenizeFn = (code: string, langId: string) => CodeLine[];
+
+const FALLBACK_COLOR = "#FAFAFA";
 
 interface UseShikiHighlighterReturn {
   highlight: HighlightFn;
+  tokenize: TokenizeFn;
   ready: boolean;
 }
 
@@ -100,7 +105,55 @@ export function useShikiHighlighter(): UseShikiHighlighterReturn {
     }
   };
 
-  return { highlight, ready };
+  const tokenize: TokenizeFn = (code: string, langId: string): CodeLine[] => {
+    const highlighter = highlighterRef.current;
+
+    // Fallback: each line is a single plain-text token
+    const plainLines = (): CodeLine[] =>
+      code.split("\n").map((line) => [{ text: line, color: FALLBACK_COLOR }]);
+
+    if (!highlighter) return plainLines();
+
+    const lang = LANGUAGE_MAP[langId];
+    if (!lang || langId === "plaintext") return plainLines();
+
+    const shikiId = lang.shikiId;
+    const loadedLangs = highlighter.getLoadedLanguages();
+
+    if (!loadedLangs.includes(shikiId as never)) {
+      if (!loadingLangsRef.current.has(shikiId)) {
+        loadingLangsRef.current.add(shikiId);
+        importShikiLang(langId).then(async (langModule) => {
+          if (langModule) {
+            try {
+              await highlighter.loadLanguage(langModule as never);
+            } catch (_) {
+              // silently ignore duplicate load errors
+            }
+          }
+          loadingLangsRef.current.delete(shikiId);
+        });
+      }
+      return plainLines();
+    }
+
+    try {
+      const result = highlighter.codeToTokens(code, {
+        lang: shikiId,
+        theme: "devroast",
+      });
+      return result.tokens.map((lineTokens) =>
+        lineTokens.map((token) => ({
+          text: token.content,
+          color: token.color ?? FALLBACK_COLOR,
+        })),
+      );
+    } catch (_) {
+      return plainLines();
+    }
+  };
+
+  return { highlight, tokenize, ready };
 }
 
 /**

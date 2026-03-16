@@ -23,7 +23,7 @@ export const leaderboardRouter = createTRPCRouter({
       score: row.score,
       language: row.language ?? "unknown",
       shameScore: row.shameScore,
-      codeLines: row.code.split("\n").slice(0, 3),
+      code: row.code,
     }));
   }),
 });
