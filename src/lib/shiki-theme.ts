@@ -2,7 +2,7 @@ import type { ThemeRegistrationRaw } from "shiki";
 
 /**
  * Tema customizado DevRoast para Shiki.
- * Mapeia tokens semânticos do TextMate para as cores do design system.
+ * Usa o formato TextMate (settings[]) compatível com ThemeRegistrationRaw.
  *
  * Design tokens usados:
  *   text-primary    #FAFAFA
@@ -17,12 +17,16 @@ import type { ThemeRegistrationRaw } from "shiki";
 export const devroastTheme: ThemeRegistrationRaw = {
   name: "devroast",
   type: "dark",
-  settings: [],
   colors: {
     "editor.background": "#111111",
     "editor.foreground": "#FAFAFA",
   },
-  tokenColors: [
+  settings: [
+    // Global defaults
+    {
+      settings: { foreground: "#FAFAFA", background: "#111111" },
+    },
+
     // --- Comentários ---
     {
       scope: ["comment", "punctuation.definition.comment"],

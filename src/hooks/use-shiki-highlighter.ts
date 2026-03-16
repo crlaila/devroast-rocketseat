@@ -18,7 +18,35 @@ interface UseShikiHighlighterReturn {
 }
 
 /**
- * Hook que inicializa o Shiki highlighter no cliente via WASM.
+ * Singleton Promise — criada uma única vez no módulo, compartilhada por todos
+ * os componentes que chamam useShikiHighlighter. Evita múltiplas instâncias do
+ * Shiki e o warning "Shiki is supposed to be used as a singleton".
+ */
+let highlighterSingleton: Promise<HighlighterCore> | null = null;
+
+function getHighlighter(): Promise<HighlighterCore> {
+  if (!highlighterSingleton) {
+    highlighterSingleton = (async () => {
+      const { createHighlighterCore } = await import("shiki/core");
+      const { createOnigurumaEngine } = await import("shiki/engine/oniguruma");
+
+      const preloadedLangs = await Promise.all(
+        PRELOADED_LANG_IDS.map((id) => importShikiLang(id)),
+      );
+      const validPreloaded = preloadedLangs.filter(Boolean) as LanguageInput[];
+
+      return createHighlighterCore({
+        themes: [devroastTheme],
+        langs: validPreloaded,
+        engine: createOnigurumaEngine(import("shiki/wasm")),
+      });
+    })();
+  }
+  return highlighterSingleton;
+}
+
+/**
+ * Hook que expõe o Shiki highlighter singleton no cliente via WASM.
  * Pré-carrega as 5 linguagens mais comuns e faz lazy load das demais.
  */
 export function useShikiHighlighter(): UseShikiHighlighterReturn {
@@ -29,38 +57,17 @@ export function useShikiHighlighter(): UseShikiHighlighterReturn {
   useEffect(() => {
     let cancelled = false;
 
-    async function init() {
-      try {
-        // Importações dinâmicas — evita SSR e mantém o bundle do servidor limpo
-        const { createHighlighterCore } = await import("shiki/core");
-        const { createOnigurumaEngine } = await import(
-          "shiki/engine/oniguruma"
-        );
-
-        // Pré-carrega langs mais comuns
-        const preloadedLangs = await Promise.all(
-          PRELOADED_LANG_IDS.map((id) => importShikiLang(id)),
-        );
-        const validPreloaded = preloadedLangs.filter(
-          Boolean,
-        ) as LanguageInput[];
-
-        const highlighter = await createHighlighterCore({
-          themes: [devroastTheme],
-          langs: validPreloaded,
-          engine: createOnigurumaEngine(import("shiki/wasm")),
-        });
-
+    getHighlighter()
+      .then((highlighter) => {
         if (!cancelled) {
           highlighterRef.current = highlighter;
           setReady(true);
         }
-      } catch (err) {
+      })
+      .catch((err) => {
         console.error("[useShikiHighlighter] Init failed:", err);
-      }
-    }
+      });
 
-    init();
     return () => {
       cancelled = true;
     };
