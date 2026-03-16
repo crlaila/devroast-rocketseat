@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
-import { MetricsServer } from "@/app/_components/metrics-server";
-import { LeaderboardPageServer } from "./_components/leaderboard-page-server";
+import type { Metadata } from 'next';
+import { MetricsServer } from '@/app/_components/metrics-server';
+import { LeaderboardPageServer } from './_components/leaderboard-page-server';
 
 export const metadata: Metadata = {
-  title: "shame leaderboard — devroast",
+  title: 'shame leaderboard — devroast',
   description:
-    "The most roasted code on the internet. 2,847 submissions and counting.",
+    'The most roasted code on the internet. 2,847 submissions and counting.',
 };
 
 export default function LeaderboardPage() {
@@ -24,7 +24,7 @@ export default function LeaderboardPage() {
           </div>
 
           <p className="font-['IBM_Plex_Mono',monospace] text-[14px] font-normal text-[#6B7280]">
-            {"// the most roasted code on the internet"}
+            {'// the most roasted code on the internet'}
           </p>
 
           <MetricsServer />
